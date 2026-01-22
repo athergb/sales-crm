@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add New Client</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .form-box { margin-top: 30px; max-width: 500px; width: 100%; } 
+        label { text-align: left; }
+        input, select, textarea { width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="login-box form-box">
+        <img src="{% static 'images/qfc_logo.png' %}" alt="QFC Logo" class="logo">
+        <h2>Add New Client</h2>
+        
+        <!-- enctype IS REQUIRED FOR IMAGE UPLOADS -->
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Save Client</button>
+        </form>
+        
+        <p style="margin-top: 15px;"><a href="{% url 'dashboard' %}">Back to Dashboard</a></p>
+    </div>
+</body>
+</html>

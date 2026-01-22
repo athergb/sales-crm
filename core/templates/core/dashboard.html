@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sales CRM Dashboard</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .success { color: green; }
+        .pending { color: orange; }
+    </style>
+</head>
+<body>
+    <div style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Welcome, {{ user.username }}!</h1>
+            <p><a href="{% url 'logout' %}" style="color: red;">Logout</a></p>
+        </div>
+        <p>You are logged in as: <strong>{{ user.userprofile.get_role_display }}</strong></p>
+
+        <!-- STAT CARDS SECTION -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px;">
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 5px solid #007bff; text-align: center;">
+                <h3>{{ weekly_count }}</h3>
+                <p>This Week</p>
+            </div>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 5px solid #28a745; text-align: center;">
+                <h3>{{ yesterday_count }}</h3>
+                <p>Yesterday</p>
+            </div>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 5px solid #ffc107; text-align: center;">
+                <h3>{{ monthly_count }}</h3>
+                <p>This Month</p>
+            </div>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 5px solid #17a2b8; text-align: center;">
+                <h3>{{ ytd_count }}</h3>
+                <p>YTD</p>
+            </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <p style="margin-top: 25px;">
+            <a href="{% url 'add_visit' %}" style="text-decoration: none; background: #007bff; color: white; padding: 10px; border-radius: 5px; margin-right: 5px;">+ Log New Visit</a>
+            <a href="{% url 'add_client' %}" style="text-decoration: none; background: #28a745; color: white; padding: 10px; border-radius: 5px;">+ Add New Client</a>
+            <a href="{% url 'export_excel' %}" style="text-decoration: none; background: #17a2b8; color: white; padding: 10px; border-radius: 5px;">Download Excel</a>
+        </p>
+        
+        <!-- VISITS TABLE -->
+        <h2>Recent Visits</h2>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+                <tr>
+                    <th>Agent</th>
+                    <th>Client</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for visit in visits %}
+                <tr>
+                    <td>{{ visit.agent.username }}</td>
+                    <td>{{ visit.client.name }}</td>
+                    <td>{{ visit.visit_date }}</td>
+                    <td>{{ visit.visit_type }}</td>
+                    <td class="{{ visit.status|lower }}">{{ visit.status }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No visits found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

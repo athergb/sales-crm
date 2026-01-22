@@ -1,0 +1,28 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CRM Login</title>
+    <!-- THIS LINK CONNECTS YOUR CSS FILE -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="login-box">
+        <img src="{% static 'images/qfc_logo.png' %}" alt="QFC Logo" class="logo">
+        
+        <h2>Sales CRM Login</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Login</button>
+        </form>
+
+        <!-- ADD THIS FOOTER LINE HERE -->
+        <footer class="footer">
+            Powered by AA Technologies - 2026
+        </footer>
+
+    </div>
+</body>
+</html>
