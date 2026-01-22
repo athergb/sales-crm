@@ -1,0 +1,5 @@
+Django
+pillow
+openpyxl
+gunicorn
+psycopg2-binary
