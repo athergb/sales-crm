@@ -1,18 +1,5 @@
 from django.contrib import admin
-from django.contrib.auth.models import User
 from .models import Branch, Client, Visit, UserProfile
-
-# Link Profile to User in Admin
-class UserProfileInline(admin.StackedInline):
-    model = UserProfile
-    can_delete = False
-
-class UserAdmin(admin.ModelAdmin):
-    inlines = (UserProfileInline,)
-
-# Unregister default User and register ours
-admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
 
 @admin.register(Branch)
 class BranchAdmin(admin.ModelAdmin):
@@ -27,3 +14,7 @@ class ClientAdmin(admin.ModelAdmin):
 class VisitAdmin(admin.ModelAdmin):
     list_display = ('agent', 'client', 'visit_type', 'status', 'visit_date')
     list_filter = ('status', 'visit_type', 'visit_date')
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'role', 'branch')
