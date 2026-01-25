@@ -56,7 +56,18 @@ def add_visit(request):
         form = VisitForm(request.POST)
         if form.is_valid():
             visit = form.save(commit=False)
+            
+            # 1. Set Logged in User
             visit.agent = request.user
+            
+            # 2. Auto-Select Branch (From User Profile)
+            # Note: We don't save branch to Visit model, we rely on User Profile.
+            
+            # 3. Handle Date (If empty, set to Now)
+            if not visit.visit_date:
+                import datetime
+                visit.visit_date = datetime.datetime.now()
+                
             visit.save()
             return redirect('dashboard')
     else:

@@ -2,24 +2,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard</title>
+    <title>Log New Visit</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
-        body { font-family: sans-serif; padding: 0; margin: 0; background-color: #f4f4f4; }
-        .content-wrapper { padding: 20px; max-width: 1000px; margin: 0 auto; }
+        body { 
+            font-family: sans-serif; 
+            padding: 0; 
+            margin: 0; 
+            background-color: #f4f4f4; 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
         
-        /* Dashboard Grid Styles */
-        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 5px solid #007bff; text-align: center; }
-        .stat-card h3 { margin: 0; font-size: 24px; }
-        .stat-card p { margin: 5px 0 0; color: #666; }
+        /* HEADER STYLES */
+        .main-header {
+            width: 100%;
+            background-color: #f8f9fa;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            box-sizing: border-box;
+        }
         
-        /* Table Styles */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .success { color: green; }
-        .pending { color: orange; }
+        .header-container { display: flex; align-items: center; }
+        .header-text h1 { margin: 0; font-size: 24px; color: #333; font-family: Arial, sans-serif; }
+        .header-text h2 { margin: 0; font-size: 16px; color: #666; font-weight: normal; font-family: Arial, sans-serif; margin-left: 15px; }
+        .header-logo { height: 60px; margin-right: 15px; margin-left: 0; }
+
+        /* CONTENT BOX */
+        .content-wrapper { 
+            padding: 20px; 
+            max-width: 800px; 
+            margin: 30px auto; 
+            background: white; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            flex: 1;
+        }
+        
+        /* FORM GRID LAYOUT */
+        .visit-form {
+            display: grid;
+            grid-template-columns: 150px 1fr; /* Label Width | Input Width */
+            gap: 15px; 
+            align-items: center;
+        }
+
+        .form-group {
+            display: contents; 
+        }
+
+        .form-group label {
+            font-weight: bold;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        select, input[type="text"], input[type="date"], input[type="email"], textarea {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Full width fields */
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        button { 
+            grid-column: 1 / -1; 
+            margin-top: 20px; 
+            padding: 10px; 
+            background-color: #28a745; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 16px; 
+        }
+        
+        /* FOOTER STYLES */
+        .main-footer { width: 100%; padding: 20px; background-color: #333; color: #fff; text-align: center; font-size: 14px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -27,77 +94,66 @@
 <!-- HEADER -->
 <header class="main-header">
     <div class="header-container">
+        <img src="{% static 'images/qfc_logo.png' %}" alt="QFC Logo" class="header-logo">
         <div class="header-text">
             <h1>QFC Group</h1>
             <h2>Sales Team CRM</h2>
         </div>
-        <img src="{% static 'images/qfc_logo.png' %}" alt="QFC Logo" class="header-logo">
     </div>
 </header>
 
 <!-- CONTENT -->
 <div class="content-wrapper">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h1>Welcome, {{ user.username }}!</h1>
-        <p><a href="{% url 'logout' %}" style="color: red;">Logout</a></p>
-    </div>
-    <p>You are logged in as: <strong>{{ user.userprofile.get_role_display }}</strong></p>
+    <h2>Log New Visit</h2>
+    <!-- MANUAL FORM LAYOUT -->
+    <form method="post" class="visit-form">
+        {% csrf_token %}
+        
+        <!-- Agency -->
+        <div class="form-group">
+            <label for="{{ form.agency.id_for_label }}">Agency Name:</label>
+            {{ form.agency }}
+        </div>
 
-    <!-- ANALYTICS CARDS -->
-    <div class="stat-grid">
-        <div class="stat-card" style="border-color: #007bff;">
-            <h3>{{ weekly_count }}</h3>
-            <p>This Week</p>
+        <!-- Date of Visit -->
+        <div class="form-group">
+            <label for="{{ form.visit_date.id_for_label }}">Date of Visit:</label>
+            {{ form.visit_date }}
         </div>
-        <div class="stat-card" style="border-color: #28a745;">
-            <h3>{{ yesterday_count }}</h3>
-            <p>Yesterday</p>
-        </div>
-        <div class="stat-card" style="border-color: #ffc107;">
-            <h3>{{ monthly_count }}</h3>
-            <p>This Month</p>
-        </div>
-        <div class="stat-card" style="border-color: #17a2b8;">
-            <h3>{{ ytd_count }}</h3>
-            <p>YTD</p>
-        </div>
-    </div>
 
-    <!-- BUTTONS -->
-    <p style="margin-bottom: 20px;">
-        <a href="{% url 'add_visit' %}" style="text-decoration: none; background: #007bff; color: white; padding: 10px; border-radius: 5px; margin-right: 5px;">+ Log New Visit</a>
-        <a href="{% url 'add_client' %}" style="text-decoration: none; background: #28a745; color: white; padding: 10px; border-radius: 5px;">+ Add New Client</a>
-        <a href="{% url 'export_excel' %}" style="text-decoration: none; background: #17a2b8; color: white; padding: 10px; border-radius: 5px; margin-left: 5px;">Download Excel</a>
-    </p>
-    
-    <!-- TABLE -->
-    <h2>Recent Visits</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Agent</th>
-                <th>Client</th>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for visit in visits %}
-            <tr>
-                <td>{{ visit.agent.username }}</td>
-                <td>{{ visit.client.name }}</td>
-                <td>{{ visit.visit_date }}</td>
-                <td>{{ visit.visit_type }}</td>
-                <td class="{{ visit.status|lower }}">{{ visit.status }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5">No visits found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <!-- Type of Business -->
+        <div class="form-group">
+            <label for="{{ form.type_of_business.id_for_label }}">Type of Business:</label>
+            {{ form.type_of_business }}
+        </div>
+
+        <!-- Contact Person -->
+        <div class="form-group">
+            <label for="{{ form.contact_person.id_for_label }}">Contact Person:</label>
+            {{ form.contact_person }}
+        </div>
+
+        <!-- Mobile Number -->
+        <div class="form-group">
+            <label for="{{ form.mobile_number.id_for_label }}">Mobile Number:</label>
+            {{ form.mobile_number }}
+        </div>
+
+        <!-- Email Address -->
+        <div class="form-group">
+            <label for="{{ form.email_address.id_for_label }}">Email Address:</label>
+            {{ form.email_address }}
+        </div>
+
+        <!-- Remarks (Full Width) -->
+        <div class="form-group full-width">
+            <label for="{{ form.remarks.id_for_label }}">Remarks:</label>
+            {{ form.remarks }}
+        </div>
+
+        <button type="submit">Save Visit</button>
+    </form>
+    <p style="text-align: center; margin-top: 15px;"><a href="{% url 'dashboard' %}" style="color: #007bff; text-decoration: none;">Cancel & Back to Dashboard</a></p>
 </div>
 
 <!-- FOOTER -->

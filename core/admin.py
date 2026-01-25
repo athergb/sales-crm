@@ -1,5 +1,9 @@
 from django.contrib import admin
-from .models import Branch, Client, Visit, UserProfile
+from .models import Branch, Client, Visit, UserProfile, Agency
+
+@admin.register(Agency)
+class AgencyAdmin(admin.ModelAdmin):
+    list_display = ('name',)
 
 @admin.register(Branch)
 class BranchAdmin(admin.ModelAdmin):
@@ -12,8 +16,8 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Visit)
 class VisitAdmin(admin.ModelAdmin):
-    list_display = ('agent', 'client', 'visit_type', 'status', 'visit_date')
-    list_filter = ('status', 'visit_type', 'visit_date')
+    list_display = ('agent', 'agency', 'visit_date', 'type_of_business', 'contact_person')
+    list_filter = ('type_of_business', 'visit_date')
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):

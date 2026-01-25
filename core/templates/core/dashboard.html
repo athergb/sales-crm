@@ -1,109 +1,38 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <style>
-        body { font-family: sans-serif; padding: 0; margin: 0; background-color: #f4f4f4; }
-        .content-wrapper { padding: 20px; max-width: 1000px; margin: 0 auto; }
-        
-        /* Dashboard Grid Styles */
-        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 5px solid #007bff; text-align: center; }
-        .stat-card h3 { margin: 0; font-size: 24px; }
-        .stat-card p { margin: 5px 0 0; color: #666; }
-        
-        /* Table Styles */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .success { color: green; }
-        .pending { color: orange; }
-    </style>
-</head>
-<body>
-
-<!-- HEADER -->
-<header class="main-header">
-    <div class="header-container">
-        <div class="header-text">
-            <h1>QFC Group</h1>
-            <h2>Sales Team CRM</h2>
-        </div>
-        <img src="{% static 'images/qfc_logo.png' %}" alt="QFC Logo" class="header-logo">
-    </div>
-</header>
-
-<!-- CONTENT -->
-<div class="content-wrapper">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h1>Welcome, {{ user.username }}!</h1>
-        <p><a href="{% url 'logout' %}" style="color: red;">Logout</a></p>
-    </div>
-    <p>You are logged in as: <strong>{{ user.userprofile.get_role_display }}</strong></p>
-
-    <!-- ANALYTICS CARDS -->
-    <div class="stat-grid">
-        <div class="stat-card" style="border-color: #007bff;">
-            <h3>{{ weekly_count }}</h3>
-            <p>This Week</p>
-        </div>
-        <div class="stat-card" style="border-color: #28a745;">
-            <h3>{{ yesterday_count }}</h3>
-            <p>Yesterday</p>
-        </div>
-        <div class="stat-card" style="border-color: #ffc107;">
-            <h3>{{ monthly_count }}</h3>
-            <p>This Month</p>
-        </div>
-        <div class="stat-card" style="border-color: #17a2b8;">
-            <h3>{{ ytd_count }}</h3>
-            <p>YTD</p>
-        </div>
-    </div>
-
-    <!-- BUTTONS -->
-    <p style="margin-bottom: 20px;">
-        <a href="{% url 'add_visit' %}" style="text-decoration: none; background: #007bff; color: white; padding: 10px; border-radius: 5px; margin-right: 5px;">+ Log New Visit</a>
-        <a href="{% url 'add_client' %}" style="text-decoration: none; background: #28a745; color: white; padding: 10px; border-radius: 5px;">+ Add New Client</a>
-        <a href="{% url 'export_excel' %}" style="text-decoration: none; background: #17a2b8; color: white; padding: 10px; border-radius: 5px; margin-left: 5px;">Download Excel</a>
-    </p>
-    
-    <!-- TABLE -->
-    <h2>Recent Visits</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Agent</th>
-                <th>Client</th>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for visit in visits %}
-            <tr>
-                <td>{{ visit.agent.username }}</td>
-                <td>{{ visit.client.name }}</td>
-                <td>{{ visit.visit_date }}</td>
-                <td>{{ visit.visit_type }}</td>
-                <td class="{{ visit.status|lower }}">{{ visit.status }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5">No visits found.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-<!-- FOOTER -->
-<footer class="main-footer">
-    &copy; 2026 Powered by AA Technologies. All Rights Reserved.
-</footer>
-
-</body>
-</html>
+<!-- TABLE -->
+<h2>Recent Visits</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Sr. No.</th>
+            <th>Staff Name</th>
+            <th>Branch</th>
+            <th>Date of Visit</th>
+            <th>Agency Name</th>
+            <th>Contact Person</th>
+            <th>Mobile Number</th>
+            <th>Email Address</th>
+            <th>Type of Business</th>
+            <th>Remarks</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for visit in visits %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ visit.agent.username }}</td>
+            <td>{{ visit.agent.userprofile.branch }}</td>
+            <td>{{ visit.visit_date }}</td>
+            <td>{{ visit.agency }}</td>
+            <td>{{ visit.contact_person }}</td>
+            <td>{{ visit.mobile_number }}</td>
+            <td>{{ visit.email_address }}</td>
+            <td>{{ visit.type_of_business }}</td>
+            <td>{{ visit.remarks }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="10">No visits found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
