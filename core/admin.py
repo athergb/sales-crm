@@ -1,20 +1,18 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.models import User  # <--- MISSING IMPORT ADDED HERE
 from .models import Branch, Client, Visit, UserProfile, Agency
 
-# 1. Enhanced User Admin with Password Reset in Inline
+# 1. Enhanced User Admin
 class UserAdmin(BaseUserAdmin):
-    # Show basic fields in the list
     list_display = ('username', 'email', 'is_active')
     
-    # Add Password Reset directly to the edit form
+    # Add Password Reset form to inline
     add_form_template = "admin/change_password_form.html"
     change_password_template = "admin/change_password_form.html"
     
-    # Inline settings
     def get_inline_instances(self, request, obj):
-        # Return the UserProfile inline as normal
         return super().get_inline_instances(request, obj)
 
 # 2. Agency Admin
@@ -44,7 +42,7 @@ class VisitAdmin(admin.ModelAdmin):
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'role', 'branch')
 
-# 7. Register User with our enhanced admin
-# We unregister default User and register our custom one
+# 7. Register User
+# We must import User (above) before doing this:
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
