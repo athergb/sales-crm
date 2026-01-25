@@ -1,0 +1,29 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block branding %}
+    <style>
+        #site-name a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #000;
+        }
+        #site-name img {
+            margin-right: 10px;
+        }
+        #site-name span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+    
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">
+            <!-- Shows the Logo -->
+            <img src="{% static 'images/qfc_logo.png' %}" height="50" alt="QFC Logo">
+            <!-- Shows the Text -->
+            <span>QFC Group PVT LTD</span>
+        </a>
+    </h1>
+{% endblock %}
