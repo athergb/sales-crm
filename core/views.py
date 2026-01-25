@@ -22,18 +22,14 @@ def dashboard(request):
     elif profile.role == 'BRANCH_MGR':
         visits = visits.filter(agent__userprofile__branch=profile.branch)
 
-    # --- MAIN ANALYTICS LOGIC ---
+    # --- MAIN ANALYTICS LOGIC (Based on Visits) ---
     now = timezone.now()
     today = now.date()
     yesterday = today - timedelta(days=1)
     
-    # Calculate YTD (Year To Date)
     start_of_year = now.replace(month=1, day=1)
-
-    # Calculate This Week
     start_of_week = today - timedelta(days=today.weekday())
 
-    # FILTER VISITS FOR ANALYTICS
     filtered_visits = visits
     
     ytd_count = filtered_visits.filter(visit_date__gte=start_of_year).count()
@@ -111,40 +107,46 @@ def add_visit(request):
 @login_required
 def add_client(request):
     if request.method == 'POST':
-        form = AgencyForm(request.POST, request.FILES) # Updated to AgencyForm
+        form = AgencyForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('dashboard')
     else:
-        form = AgencyForm() # Updated to AgencyForm
+        form = AgencyForm()
 
     return render(request, 'core/add_client.html', {'form': form})
 
 @login_required
 def export_visits_to_excel(request):
+    # FIX: Wrap logic in try/except, and put if/else correctly
     try:
-        profile = request.user.userprofile
-    except UserProfile.DoesNotExist:
-        return redirect('login')
+        # 1. Get Data based on User Role
+        try:
+            profile = request.user.userprofile
+        except UserProfile.DoesNotExist:
+            return redirect('login')
 
-    visits = Visit.objects.all().order_by('-visit_date')
-    
-    if profile.role == 'AGENT':
-        visits = visits.filter(agent=request.user)
-    elif profile.role == 'BRANCH_MGR':
-        visits = visits.filter(agent__userprofile__branch=profile.branch)
+        visits = Visit.objects.all().order_by('-visit_date')
+        
+        if profile.role == 'AGENT':
+            visits = visits.filter(agent=request.user)
+        elif profile.role == 'BRANCH_MGR':
+            visits = visits.filter(agent__userprofile__branch=profile.branch)
 
-    # 2. Handle Date Filtering
-    if request.method == 'POST':
-        start_date_str = request.POST.get('start_date')
-        end_date_str = request.POST.get('end_date')
+        # 2. Handle Date Filtering
+        if request.method == 'POST':
+            start_date_str = request.POST.get('start_date')
+            end_date_str = request.POST.get('end_date')
 
-        if start_date_str and end_date_str:
-            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date() + timedelta(days=1)
-            visits = visits.filter(visit_date__range=[start_date, end_date])
-        else:
-            pass
+            # Convert string to date object
+            if start_date_str and end_date_str:
+                start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+                # Add 1 day to end date so it includes the selected end day fully
+                end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date() + timedelta(days=1)
+            
+                visits = visits.filter(visit_date__range=[start_date, end_date])
+            else:
+                pass # Download all
 
         # 3. Create Excel Workbook
         workbook = Workbook()
@@ -157,7 +159,7 @@ def export_visits_to_excel(request):
 
         # 5. Add Rows
         for visit in visits:
-            # SAFER CHECK: Check if agency exists before getting name
+            # SAFE CHECK: Check if agency exists before getting name
             agency_name = getattr(visit.agency, 'name', '') 
             
             row_data = [
@@ -180,10 +182,11 @@ def export_visits_to_excel(request):
         workbook.save(response)
         return response
     else:
+        # If GET request, show the calendar form
         return render(request, 'core/download_excel.html')
     except Exception as e:
         # Print error to console for debugging
         import traceback
         print(f"Export Error: {e}")
         traceback.print_exc()
-        raise
+        return redirect('dashboard') # Redirect to avoid crash on dashboard
