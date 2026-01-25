@@ -69,3 +69,52 @@ button:hover { background-color: #0056b3; }
     font-size: 12px;
     color: #888;
 }
+
+/* MAIN HEADER STYLES */
+.main-header {
+    background-color: #f8f9fa;
+    padding: 15px 30px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: flex-end; /* This pushes everything to the RIGHT corner */
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    text-align: right;
+}
+
+.header-text h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+    font-family: Arial, sans-serif;
+}
+
+.header-text h2 {
+    margin: 0;
+    font-size: 16px;
+    color: #666;
+    font-weight: normal;
+    font-family: Arial, sans-serif;
+}
+
+.header-logo {
+    height: 60px; /* Adjust logo size here */
+    margin-left: 15px; /* Space between text and logo */
+}
+
+/* MAIN FOOTER STYLES */
+.main-footer {
+    margin-top: 50px;
+    padding: 20px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    font-size: 14px;
+    position: relative;
+    width: 100%;
+}
