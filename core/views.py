@@ -122,7 +122,6 @@ def add_client(request):
 
 @login_required
 def export_visits_to_excel(request):
-    # 1. Get Data based on User Role
     try:
         profile = request.user.userprofile
     except UserProfile.DoesNotExist:
@@ -140,15 +139,12 @@ def export_visits_to_excel(request):
         start_date_str = request.POST.get('start_date')
         end_date_str = request.POST.get('end_date')
 
-        # Convert string to date object
         if start_date_str and end_date_str:
             start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-            # Add 1 day to end_date so it includes the selected end day fully
             end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date() + timedelta(days=1)
-            
             visits = visits.filter(visit_date__range=[start_date, end_date])
         else:
-            pass # Download all
+            pass
 
         # 3. Create Excel Workbook
         workbook = Workbook()
@@ -161,9 +157,12 @@ def export_visits_to_excel(request):
 
         # 5. Add Rows
         for visit in visits:
+            # SAFER CHECK: Check if agency exists before getting name
+            agency_name = getattr(visit.agency, 'name', '') 
+            
             row_data = [
                 visit.agent.username,
-                visit.agency.name if visit.agency else "", # Handle case where agency might be deleted
+                agency_name,
                 visit.contact_person,
                 visit.mobile_number,
                 visit.email_address,
@@ -181,5 +180,10 @@ def export_visits_to_excel(request):
         workbook.save(response)
         return response
     else:
-        # If GET request, show the calendar form
         return render(request, 'core/download_excel.html')
+    except Exception as e:
+        # Print error to console for debugging
+        import traceback
+        print(f"Export Error: {e}")
+        traceback.print_exc()
+        raise
