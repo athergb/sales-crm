@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 # 1. New Agency Model (For the List Selection)
 class Agency(models.Model):
     name = models.CharField(max_length=200, unique=True)
+    visiting_card = models.ImageField(upload_to='agency_cards/', blank=True, null=True)
     
     def __str__(self):
         return self.name

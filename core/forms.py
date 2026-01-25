@@ -27,3 +27,9 @@ class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
         fields = ['name', 'phone', 'address', 'visiting_card', 'client_type']
+
+# 2. Updated to use Agency Model
+class AgencyForm(forms.ModelForm):
+    class Meta:
+        model = Agency  # Use Agency model
+        fields = ['name', 'visiting_card'] # Include visiting_card        
